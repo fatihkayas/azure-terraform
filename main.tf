@@ -48,7 +48,7 @@ resource "azurerm_availability_set" "example" {
   location                    = var.location
   resource_group_name         = var.resource_group_name
   platform_fault_domain_count = 2
-  platform_update_domain_count = 5  
+  platform_update_domain_count = 5
 
   tags = {
     environment = "Production"
@@ -80,3 +80,5 @@ resource "azurerm_linux_virtual_machine" "example" {
     version   = "latest"
   }
 }
+
+
