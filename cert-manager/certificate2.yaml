@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: my-tls-certificate
+  namespace: default  # Set your appropriate namespace
+spec:
+  secretName:   # This secret will store the TLS certificate and private key
+  issuerRef:
+    name: acme-issuer  # Reference to the previously created ACME issuer
+    kind: ClusterIssuer  # The kind of issuer (ClusterIssuer or Issuer)
+  commonName: sky.worldtto.com  # The domain for which the certificate is requested
+  dnsNames:
+    - "my-domain"  # The domain name(s) for which the certificate is valid
+  duration: "720h"  # 30 days expressed in hours
+  renewBefore: "240h"  # Renew the certificate 10 days before expiration
