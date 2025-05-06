@@ -1,5 +1,37 @@
-.terraform/
-*.tfstate*
-terraform.tfvars
+# Local .terraform directories
+**/.terraform/*
+
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+
+# Crash log files
+crash.log
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration files
+.terraformrc
 .terraform.lock.hcl
-sky2.pem
+
+# IDE / Editor folders
+.vscode/
+.idea/
+*.swp
+
+# SSH keys or other secrets
+*.pem
+*.key
+*.pub
+
+# OS files
+.DS_Store
+Thumbs.db

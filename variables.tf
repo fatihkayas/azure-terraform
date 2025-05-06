@@ -4,6 +4,67 @@ variable "subscription_id" {
 }
 
 variable "resource_group_name" {
+  description = "name of resource group"
+  type        = string
+  default     = ""
+  
+}
+
+variable "location" {
+  description = "Azure region"
+  type        = string
+  default     = "West Europe"
+  
+}
+
+variable "admin_user" {
+  description = "Admin Username"
+  type        = string
+  default     = ""
+  
+}
+
+variable "vm_size" {  
+  description = "Azure VM Size"
+  type        = string
+  default     = "Standard_B1s"
+  
+}
+
+variable "ssh_key_path" {
+  description = "Path to the SSH Public Key"
+  type        = string
+  default     = "" # Replace with the actual path to your SSH public key
+  
+}
+
+variable "vnet_name" {
+  description = "Virtual Network Name"
+  type        = string
+  default     = "example-network"
+  
+}
+
+variable "address_space" {
+  description = "VNet Address Space"
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+}
+
+variable "subnet_name" {
+  description = "Subnet Name"
+  type        = string
+  default     = "internal"
+  
+}
+
+variable "subnet_prefix" {
+  description = "Subnet Address Prefix"
+  type        = list(string)
+  default     = ["10.0.2.0/24"]
+}
+/*
+variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
   default     = "vm-video"
@@ -50,9 +111,9 @@ variable "admin_user" {
   type        = string
   default     = "adminuser"
 }
-
 variable "ssh_key_path" {
   description = "Path to the SSH Public Key"
   type        = string
-  default     = "sky2.pem"
+  default     = "" # Replace with the actual path to your SSH public key
 }
+*/

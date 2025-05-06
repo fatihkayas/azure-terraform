@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.15.0"
+      version = "4.27.0"
     }
   }
 }
@@ -12,42 +12,48 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-resource "azurerm_resource_group" "example" {
+# Resource Group
+resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
 }
 
-resource "azurerm_virtual_network" "example" {
+# Virtual Network
+resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   address_space       = var.address_space
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
+# Subnet
 resource "azurerm_subnet" "example" {
   name                 = var.subnet_name
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.example.name
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.subnet_prefix
 }
 
+# Network Interface
 resource "azurerm_network_interface" "example" {
   name                = "example-nic"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.example.id
-    private_ip_address_allocation = "Dynamic"
+    name                                     = "internal"
+    subnet_id                                = azurerm_subnet.example.id
+    private_ip_address_allocation            = "Dynamic"
+    public_ip_address_id                     = azurerm_public_ip.example.id
   }
 }
 
+# Availability Set
 resource "azurerm_availability_set" "example" {
-  name                        = "example-aset"
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
-  platform_fault_domain_count = 2
+  name                         = "example-aset"
+  location                     = var.location
+  resource_group_name          = azurerm_resource_group.rg.name
+  platform_fault_domain_count  = 2
   platform_update_domain_count = 5
 
   tags = {
@@ -55,22 +61,25 @@ resource "azurerm_availability_set" "example" {
   }
 }
 
+# Linux Virtual Machine
 resource "azurerm_linux_virtual_machine" "example" {
-  name                = "example-machine"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  size                = var.vm_size
-  admin_username      = var.admin_user
+  name                  = "example-machine"
+  resource_group_name   = azurerm_resource_group.rg.name
+  location              = var.location
+  size                  = var.vm_size
+  admin_username        = var.admin_user
   network_interface_ids = [azurerm_network_interface.example.id]
-
-  admin_ssh_key {
-    username   = var.admin_user
-    public_key = file(var.ssh_key_path)  # Ensure the correct path to your public key
-  }
+  availability_set_id   = azurerm_availability_set.example.id
 
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
+  }
+
+  admin_ssh_key {
+    username   = var.admin_user
+    public_key = file(var.ssh_key_path)
+
   }
 
   source_image_reference {
@@ -81,4 +90,15 @@ resource "azurerm_linux_virtual_machine" "example" {
   }
 }
 
+output "vm_public_ip" {
+  value = azurerm_public_ip.example.ip_address
+}
 
+
+resource azurerm_public_ip "example" {
+  name                = "example-public-ip"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  allocation_method = "Dynamic"
+}
